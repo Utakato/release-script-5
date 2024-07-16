@@ -114,7 +114,7 @@ echo "After sed"
 cat prod-aws/uwcouk-cms/cms-v2/deployment.yaml
 echo -e  "${GREEN}Updated deployment.yaml with latest commit hash:${NC} $LATEST_COMMIT_HASH"
 # Commit the changes
-run_command git add 
+run_command git add .
 run_command git commit -m "Update CMS image to $LATEST_COMMIT_HASH"
 echo -e "${GREEN}Committed the changes to the deployment.yaml${NC}"
 
