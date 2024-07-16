@@ -106,7 +106,7 @@ echo -e "${GREEN}Created a new release branch: ${NC}cms-release-$RELEASE_VERSION
 # Update deployment.yaml with the latest commit hash
 cat prod-aws/uwcouk-cms/cms-v2/deployment.yaml
 echo "Before sed"
-run_command sed -i '' "s|image: registry\.uw\.systems/uwcouk-cms/uw\.co\.uk-cms-v2:[^ ]*|image: registry.uw.systems/uwcouk-cms/uw.co.uk-cms-v2:$LATEST_COMMIT_HASH|" deployment.yaml
+run_command sed -i '' "s|image: registry\.uw\.systems/uwcouk-cms/uw\.co\.uk-cms-v2:[^ ]*|image: registry.uw.systems/uwcouk-cms/uw.co.uk-cms-v2:$LATEST_COMMIT_HASH|" prod-aws/uwcouk-cms/cms-v2/deployment.yaml
 if [ $? -ne 0 ]; then
     handle_error "Failed to update deployment.yaml with latest commit hash."
 fi
