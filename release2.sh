@@ -101,16 +101,20 @@ cd $kubernetes
 run_command git checkout master
 run_command git pull
 run_command git checkout -b cms-release-$RELEASE_VERSION
-echo -e "${GREEN}Created a new release branch${NC}"
+echo -e "${GREEN}Created a new release branch: ${NC}cms-release-$RELEASE_VERSION"
 
 # Update deployment.yaml with the latest commit hash
-run_command sed -i "" "s|image: registry.uw.systems/uwcouk-cms/uw.co.uk-cms-v2:[0-9a-f]\+|image: registry.uw.systems/uwcouk-cms/uw.co.uk-cms-v2:$LATEST_COMMIT_HASH|g" prod-aws/uwcouk-cms/cms-v2/deployment.yaml
+cat prod-aws/uwcouk-cms/cms-v2/deployment.yaml
+echo "Before sed"
+run_command sed -i '' "s|image: registry\.uw\.systems/uwcouk-cms/uw\.co\.uk-cms-v2:[^ ]*|image: registry.uw.systems/uwcouk-cms/uw.co.uk-cms-v2:$LATEST_COMMIT_HASH|" deployment.yaml
 if [ $? -ne 0 ]; then
     handle_error "Failed to update deployment.yaml with latest commit hash."
 fi
+echo "After sed"
+cat prod-aws/uwcouk-cms/cms-v2/deployment.yaml
 echo -e  "${GREEN}Updated deployment.yaml with latest commit hash:${NC} $LATEST_COMMIT_HASH"
 # Commit the changes
-run_command git add prod-aws/uwcouk-cms/cms-v2/deployment.yaml
+run_command git add 
 run_command git commit -m "Update CMS image to $LATEST_COMMIT_HASH"
 echo -e "${GREEN}Committed the changes to the deployment.yaml${NC}"
 
