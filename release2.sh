@@ -80,14 +80,14 @@ LATEST_COMMIT_HASH=$(git rev-parse HEAD)
 if [ $? -ne 0 ]; then
     handle_error "Failed to get the latest commit hash."
 fi
-echo "${GREEN}Saved latest commit ${NC}$LATEST_COMMIT_HASH ${GREEN}for live branch to update kubernetes deployment.yaml"
+echo -e "${GREEN}Saved latest commit ${NC}$LATEST_COMMIT_HASH ${GREEN}for live branch to update kubernetes deployment.yaml"
 
 # Find kubernetes manifests --TESTING ONLY--
 kubernetes=~/mock-kubernetes-manifests
 if [ -z "$kubernetes" ]; then
     handle_error "Kubernetes manifests directory not found."
 fi
-echo "${GREEN}Found kubernetes manifests at ${NC}$kubernetes"
+echo -e "${GREEN}Found kubernetes manifests at ${NC}$kubernetes"
 cd $kubernetes
 
 # Find kubernetes manifests
@@ -104,10 +104,11 @@ run_command git checkout -b cms-release-$RELEASE_VERSION
 echo -e "${GREEN}Created a new release branch${NC}"
 
 # Update deployment.yaml with the latest commit hash
-sed_command="s|image: registry.uw.systems/uwcouk-cms/uw.co.uk-cms-v2:[0-9a-f]+|image: registry.uw.systems/uwcouk-cms/uw.co.uk-cms-v2:$LATEST_COMMIT_HASH|g"
-run_command sed -i '' -e "$sed_command" prod-aws/uwcouk-cms/cms-v2/deployment.yaml
-echo "${GREEN}Updated deployment.yaml with latest commit hash:${NC} $LATEST_COMMIT_HASH"
-
+run_command sed -i "" "s|image: registry.uw.systems/uwcouk-cms/uw.co.uk-cms-v2:[0-9a-f]\+|image: registry.uw.systems/uwcouk-cms/uw.co.uk-cms-v2:$LATEST_COMMIT_HASH|g" prod-aws/uwcouk-cms/cms-v2/deployment.yaml
+if [ $? -ne 0 ]; then
+    handle_error "Failed to update deployment.yaml with latest commit hash."
+fi
+echo -e  "${GREEN}Updated deployment.yaml with latest commit hash:${NC} $LATEST_COMMIT_HASH"
 # Commit the changes
 run_command git add prod-aws/uwcouk-cms/cms-v2/deployment.yaml
 run_command git commit -m "Update CMS image to $LATEST_COMMIT_HASH"
