@@ -82,7 +82,7 @@ if [ $? -ne 0 ]; then
 fi
 echo "${GREEN}Saved latest commit ${NC}$LATEST_COMMIT_HASH ${GREEN}for live branch to update kubernetes deployment.yaml"
 
-# Find kubernetes manifests
+# Find kubernetes manifests --TESTING ONLY--
 kubernetes=~/mock-kubernetes-manifests
 if [ -z "$kubernetes" ]; then
     handle_error "Kubernetes manifests directory not found."
@@ -90,6 +90,7 @@ fi
 echo "${GREEN}Found kubernetes manifests at ${NC}$kubernetes"
 cd $kubernetes
 
+# Find kubernetes manifests
 # kubernetes=$(find ~ -type d -name 'kubernetes-manifests' -print -quit)
 # if [ -z "$kubernetes" ]; then
 #     handle_error "Kubernetes manifests directory not found."
