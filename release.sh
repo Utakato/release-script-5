@@ -28,6 +28,8 @@ if [ -z "$LATEST_RELEASE" ]; then
 else
     echo -e "${YELLOW}Previous release version: ${LATEST_RELEASE}${NC}"
 fi
+
+
 # Accept the release version as a command-line argument
 echo -e "${BLUE}Please enter the release version (vX.X.X):${NC}"
 read -p "" RELEASE_VERSION
