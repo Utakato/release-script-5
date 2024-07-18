@@ -29,6 +29,16 @@ else
     echo -e "${YELLOW}Previous release version: ${LATEST_RELEASE}${NC}"
 fi
 # Accept the release version as a command-line argument
+
+echo -e "${BLUE}Checking merges from last release${NC}"
+run_command git checkout $LIVE_BRANCH
+run_command git pull
+run_command git checkout dev
+run_command git pull
+
+run_command git --no-pager log --left-right --cherry-pick --oneline --merges $LATEST_RELEASE...dev --not $LIVE_BRANCH
+echo -e "${GREEN}Merged PRs found.${NC}"
+
 echo -e "${BLUE}Please enter the release version (vX.X.X):${NC}"
 read -p "" RELEASE_VERSION
 
