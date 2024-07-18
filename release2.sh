@@ -47,22 +47,22 @@ echo -e "Starting second phase of release process for version: $RELEASE_VERSION"
 echo -e "||||||||||||||||||||||||||||||\n" >> $LOG_FILE
 
 # Create a new release tag
-echo -e "${BLUE}Creating a new release tag...${NC}"
+echo -e "\n${BLUE}Creating a new release tag...${NC}"
 run_command git tag -a $RELEASE_VERSION -m "Release $RELEASE_VERSION"
 echo -e "${GREEN}Created new release tag${NC}"
 
 # Push the release tag
-echo -e "${BLUE}Pushing the $RELEASE_VERSION release tag to the remote repository...${NC}"
+echo -e "\n${BLUE}Pushing the $RELEASE_VERSION release tag to the remote repository...${NC}"
 run_command git push origin $RELEASE_VERSION
 echo -e "${GREEN}Pushed the $RELEASE_VERSION release tag to the remote repository${NC}"
 
 # Create a new release with auto-generated release notes
-echo -e "${BLUE}Creating a new release with auto-generated release notes...${NC}"
+echo -e "\n${BLUE}Creating a new release with auto-generated release notes...${NC}"
 run_command gh release create $RELEASE_VERSION --generate-notes
 echo -e "${GREEN}Created a new release with auto-generated release notes${NC}"
 
 # Sync live and dev branches
-echo -e "${BLUE}Syncing live and dev branches...${NC}"
+echo -e "\n${BLUE}Syncing live and dev branches...${NC}"
 run_command git checkout dev
 run_command git pull origin dev
 run_command git pull origin $LIVE_BRANCH
@@ -101,29 +101,33 @@ cd $kubernetes
 run_command git checkout master
 run_command git pull
 run_command git checkout -b cms-release-$RELEASE_VERSION
-echo -e "${GREEN}Created a new release branch: ${NC}cms-release-$RELEASE_VERSION"
+echo -e "${GREEN}Created a new release branch: ${NC}cms-release-$RELEASE_VERSION\n"
 
 # Update deployment.yaml with the latest commit hash
-cat prod-aws/uwcouk-cms/cms-v2/deployment.yaml
-echo "Before sed"
 run_command sed -i '' "s|image: registry\.uw\.systems/uwcouk-cms/uw\.co\.uk-cms-v2:[^ ]*|image: registry.uw.systems/uwcouk-cms/uw.co.uk-cms-v2:$LATEST_COMMIT_HASH|" prod-aws/uwcouk-cms/cms-v2/deployment.yaml
 if [ $? -ne 0 ]; then
     handle_error "Failed to update deployment.yaml with latest commit hash."
 fi
-echo "After sed"
-cat prod-aws/uwcouk-cms/cms-v2/deployment.yaml
-echo -e  "${GREEN}Updated deployment.yaml with latest commit hash:${NC} $LATEST_COMMIT_HASH"
+echo -e  "${GREEN}Updated deployment.yaml with latest commit hash:${NC} $LATEST_COMMIT_HASH\n"
+
 # Commit the changes
 run_command git add .
 run_command git commit -m "Update CMS image to $LATEST_COMMIT_HASH"
-echo -e "${GREEN}Committed the changes to the deployment.yaml${NC}"
+echo -e "${GREEN}Committed the changes to the deployment.yaml${NC}\n"
 
 # Push the changes
 run_command git push --set-upstream origin cms-release-$RELEASE_VERSION
-echo -e "${GREEN}Pushed the changes to the remote repository${NC}"
+echo -e "${GREEN}Pushed the changes to the remote repository${NC}\n"
 
 # Create PR
-run_command gh pr create --title "Release CMS $RELEASE_VERSION" --body "Automated release notes for $RELEASE_VERSION" --base "master" --head "cms-release-$RELEASE_VERSION"
+PR_URL=$(gh pr create --title "Release CMS $RELEASE_VERSION" --body "Automated release notes for $RELEASE_VERSION" --base "master" --head "cms-release-$RELEASE_VERSION")
+if [ $? -ne 0 ]; then
+    handle_error "Failed to create a pull request."
+fi
 echo -e "${GREEN}Created PR for release CMS $RELEASE_VERSION${NC}"
-echo -e "${YELLOW}Once it is approved, the new release will be deployed to production"
+echo -e "${BLUE} just copy paste this to your team's slack channel${NC}"
+echo -e "Pleasse help me out with an approval on this PR for release $RELEASE_VERSION\n\n $PR_URL\n Thank you!\n"
+echo -e "PR URL: $PR_URL" >> $LOG_FILE
+
+echo -e "\n${YELLOW}Once it is approved, the new release will be deployed to production"
 echo -e "${YELLOW}Hopefully it's not Friday, good luck!${NC}"

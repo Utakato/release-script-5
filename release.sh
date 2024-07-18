@@ -30,7 +30,7 @@ else
 fi
 # Accept the release version as a command-line argument
 
-echo -e "${BLUE}Checking merges from last release${NC}"
+echo -e "\n${BLUE}Checking merges from last release${NC}"
 run_command git checkout $LIVE_BRANCH
 run_command git pull
 run_command git checkout dev
@@ -39,7 +39,7 @@ run_command git pull
 git --no-pager log --left-right --cherry-pick --oneline --merges $LATEST_RELEASE...dev --not $LIVE_BRANCH
 echo -e "${GREEN}Merged PRs found.${NC}"
 
-echo -e "${BLUE}Please enter the release version (vX.X.X):${NC}"
+echo -e "\n${BLUE}Please enter the release version (vX.X.X):${NC}"
 read -p "" RELEASE_VERSION
 
 # Check if the release version is provided
@@ -63,28 +63,27 @@ echo -e "Starting release process for version: $RELEASE_VERSION" >> logs/release
 echo -e "||||||||||||||||||||||||||||||\n" >> logs/release.log
 
 # Switch to the dev branch
-echo -e "${BLUE}Switching to dev branch...${NC}"
+echo -e "\n${BLUE}Switching to dev branch...${NC}"
 run_command git checkout dev
 echo -e "${GREEN}Switched to dev branch${NC}"
 
 # Pull the latest changes from dev and live branches
-echo -e "${BLUE}Pulling the latest changes from dev and live branches...${NC}"
+echo -e "\n${BLUE}Pulling the latest changes from dev and live branches...${NC}"
 run_command git pull origin dev
 run_command git pull origin $LIVE_BRANCH
 echo -e "${GREEN}Pulled the latest changes from dev and live branches${NC}"
 
 # Create a new release candidate branch
-echo -e "${BLUE}Creating a new release candidate branch:...${NC}"
+echo -e "\n${BLUE}Creating a new release candidate branch:...${NC}"
 run_command git checkout -b release/$RELEASE_VERSION
 echo -e "${GREEN}Created a new release candidate branch: release/$RELEASE_VERSION${NC}"
 
-echo -e "${BLUE}Pushing the new branch to the remote repository...${NC}"
+echo -e "\n${BLUE}Pushing the new branch to the remote repository...${NC}"
 run_command git push --set-upstream origin release/$RELEASE_VERSION
 echo -e "${GREEN}Pushed the new branch to the remote repository${NC}"
 
 # Use gh CLI to create a pull request for the release
-echo -e "${BLUE}Creating a pull request for the release...${NC}"
+echo -e "\n${BLUE}Creating a pull request for the release...${NC}"
 run_command gh pr create --title "Release $RELEASE_VERSION" --body "Automated release notes for $RELEASE_VERSION" --base "$LIVE_BRANCH" --head "release/$RELEASE_VERSION"
 echo -e "${GREEN}Created PR for release $RELEASE_VERSION${NC}"
-echo -e "${YELLOW}Once it is approved, please run the second script to finish the release.${NC}"
-git --no-pager log --left-right --cherry-pick --oneline --merges v6.0.1...dev --not main
+echo -e "${YELLOW}After the "release" PR is approved, please run the second script to finish the release and deploy to kubernetes.${NC}"
