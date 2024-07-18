@@ -36,7 +36,7 @@ run_command git pull
 run_command git checkout dev
 run_command git pull
 
-run_command git --no-pager log --left-right --cherry-pick --oneline --merges $LATEST_RELEASE...dev --not $LIVE_BRANCH
+git --no-pager log --left-right --cherry-pick --oneline --merges $LATEST_RELEASE...dev --not $LIVE_BRANCH
 echo -e "${GREEN}Merged PRs found.${NC}"
 
 echo -e "${BLUE}Please enter the release version (vX.X.X):${NC}"
@@ -87,3 +87,4 @@ echo -e "${BLUE}Creating a pull request for the release...${NC}"
 run_command gh pr create --title "Release $RELEASE_VERSION" --body "Automated release notes for $RELEASE_VERSION" --base "$LIVE_BRANCH" --head "release/$RELEASE_VERSION"
 echo -e "${GREEN}Created PR for release $RELEASE_VERSION${NC}"
 echo -e "${YELLOW}Once it is approved, please run the second script to finish the release.${NC}"
+git --no-pager log --left-right --cherry-pick --oneline --merges v6.0.1...dev --not main
